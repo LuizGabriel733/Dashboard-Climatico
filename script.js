@@ -1,3 +1,14 @@
+function finalizarLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'none'; // Esconde o elemento de loading
+    }
+    const conteudo = document.getElementById('conteudo');
+    if (conteudo) {
+        conteudo.style.display = 'block'; // Exibe o conteúdo principal
+    }
+}
+
 async function buscarDadosClima() {
     try {
         const url = 'https://api.open-meteo.com/v1/forecast?latitude=-3.1190&longitude=-60.0217&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=America%2FManaus';
@@ -127,7 +138,7 @@ new Chart(contextoPizza, {
         }
     }
 });
-
+finalizarLoading();
 
     } catch (erro) {
         console.error('Erro ao buscar dados climáticos:', erro);
