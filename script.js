@@ -14,26 +14,16 @@ async function buscarDadosClima() {
         const url = 'https://api.open-meteo.com/v1/forecast?latitude=-3.1190&longitude=-60.0217&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=America%2FManaus';
         const resposta = await fetch(url);
         const dados = await resposta.json();
-        const labels = [];
-        const temperaturas = [];
-        const datas = dados.daily.time; // array com as datas em texto
 
-        //GRÁFICO DE LINHA
-const temperaturasMax = dados.daily.temperature_2m_max;// Pega as temperaturas máximas do retorno da API
+        const labels = dados.daily.time.map(data => {
+            const [ano, mes, dia] = data.split('-'); 
+            return `${dia}/${mes}`;
+        })
+        const temperaturas = dados.daily.temperature_2m_max; // Máximas
+        const temperaturasMin = dados.daily.temperature_2m_min; // Mínimas  
 
-for (let i = 0; i < datas.length; i++) {
-    const dataFormatada = new Date(datas[i]).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit'
-    });
-    labels.push(dataFormatada);
-    temperaturas.push(temperaturasMax[i]);
-}
-
-        console.log(labels);
-        console.log(temperaturas);
-
-    const contextoLinha = document.getElementById('grafico-linha').getContext('2d');
+// GRÁFICO DE LINHA
+const contextoLinha  = document.getElementById('grafico-linha').getContext('2d'); 
 new Chart(contextoLinha, {
     type: 'line',
     data: {
@@ -41,24 +31,39 @@ new Chart(contextoLinha, {
         datasets: [{
             label: 'Temperatura Diária (°C)',
             data: temperaturas,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(255, 107, 107, 0.2)',
+            borderColor: '#ff6b6b',
             borderWidth: 1,
-            fill: true, // Preenchimento abaixo da linha
-            tension: 0.1 // Suavização da linha
+            fill: true,
+            tension: 0.1
         }]
     },
     options: {
         scales: {
             y: {
-                beginAtZero: false, // Permite que o eixo Y comece em um valor diferente de zero
+                beginAtZero: false,
+                ticks: {
+                    color: '#ffffff' // 🔹 Cor dos números no eixo Y
+                }
+            },
+            x: {
+                ticks: {
+                    color: '#ffffff' // 🔹 Cor dos números no eixo X
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#ffffff' // 🔹 Cor da legenda
+                }
             }
         }
     }
 });
 
-//GRÁFICO DE BARRAS
-const temperaturasMin = dados.daily.temperature_2m_min;// Pega temperaturas mínimas do mesmo retorno da API
+
+// GRÁFICO DE BARRAS
 const contextoBarras = document.getElementById('grafico-barras').getContext('2d');
 new Chart(contextoBarras, {
     type: 'bar',
@@ -68,15 +73,15 @@ new Chart(contextoBarras, {
             {
                 label: 'Máxima (°C)',
                 data: temperaturas,
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 159, 67, 0.5)',
+                borderColor: '#ff9f43',
                 borderWidth: 1
             },
             {
                 label: 'Mínima (°C)',
                 data: temperaturasMin,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(77, 182, 255, 0.5)',
+                borderColor: '#4db6ff',
                 borderWidth: 1
             }
         ]
@@ -84,11 +89,27 @@ new Chart(contextoBarras, {
     options: {
         scales: {
             y: {
-                beginAtZero: false
+                beginAtZero: false,
+                ticks: {
+                    color: '#ffffff'
+                }
+            },
+            x: {
+                ticks: {
+                    color: '#ffffff'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#ffffff'
+                }
             }
         }
     }
 });
+
 
 //GRÁFICO DE PIZZA
 
@@ -133,11 +154,15 @@ new Chart(contextoPizza, {
     options: {
         plugins: {
             legend: {
-                position: 'bottom'
+                position: 'bottom',
+                labels: {
+                    color: '#ffffff' // 🔹 Cor da legenda
+                }
             }
         }
     }
 });
+
 finalizarLoading();
 
     } catch (erro) {
